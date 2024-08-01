@@ -2,6 +2,7 @@ import time
 
 import time
 from selenium import webdriver
+from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -9,7 +10,7 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import os
 from selenium.webdriver.common.by import By
 
-browsers = ["Chrome","Firefox"]
+browsers = ["Chrome"]
 class cross_browser():
     def browser(self):
         for browser in browsers:
@@ -38,11 +39,15 @@ class cross_browser():
             password = driver.find_element(By.NAME, "password")
             password.send_keys("Ims@0503")
             driver.find_element(By.XPATH, "//button[text()='Sign In']").click()
-            time.sleep(2)
             driver.find_element(By.XPATH,"//button[text()='North America System Admin']").click()
-            screenshot_path = os.path.join(os.getcwd(),f"{browser}_screenshort1.png")
+            version_element = driver.find_element(By.XPATH, "//div[@aria-describedby='cdk-describedby-message-0']")
+            ActionChains(driver).move_to_element(version_element).perform()
+            screenshot_path = os.path.join(os.getcwd(), f"{browser}_screenshort1.png")
             driver.save_screenshot(screenshot_path)
-            driver.quit()
+
+            # Execute JavaScript to retrieve the version number
+            version_name = driver.execute_script("return document.querySelector('.mat-tooltip').innerText;")
+            print(version_name)
 
 smoke_testing=cross_browser()
 smoke_testing.browser()
